@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سرآب، چاند، پرندے از مہجور بدر</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Nastaliq Urdu', serif; }
+    @media print {
+      button, form, .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-purple-100 to-pink-200 min-h-screen p-4">
+  <div class="max-w-xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-2">سرآب، چاند، پرندے</h1>
+    <p class="text-center text-lg text-gray-700 mb-6">از مہجور بدر</p>
+    <form id="poetryForm" class="bg-white p-4 rounded-xl shadow-md space-y-3">
+      <input type="text" id="title" placeholder="عنوان" class="w-full p-2 border rounded" required>
+      <input type="text" id="author" value="مہجور بدر" class="w-full p-2 border rounded" readonly>
+      <textarea id="poem" placeholder="اپنی شاعری لکھیں..." rows="5" class="w-full p-2 border rounded" required></textarea>
+      <button type="submit" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">محفوظ کریں</button>
+    </form><div class="mt-6 no-print">
+  <h2 class="text-xl font-semibold mb-2">نظموں کی فہرست</h2>
+  <ul id="poemIndex" class="list-decimal pr-5 text-purple-800 space-y-1"></ul>
+  <button onclick="window.print()" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">پی ڈی ایف / پرنٹ نکالیں</button>
+</div>
+
+<div id="poemsList" class="mt-6 space-y-4"></div>
+
+  </div>  <script>
+    const form = document.getElementById('poetryForm');
+    const poemsList = document.getElementById('poemsList');
+    const poemIndex = document.getElementById('poemIndex');
+
+    const loadPoems = () => {
+      const poems = JSON.parse(localStorage.getItem('poems') || '[]');
+      poemsList.innerHTML = '';
+      poemIndex.innerHTML = '';
+
+      poems.forEach((poem, index) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${poem.title}`;
+        poemIndex.appendChild(listItem);
+
+        const div = document.createElement('div');
+        div.className = "bg-white p-4 rounded shadow break-inside-avoid-page";
+        div.innerHTML = `
+          <h2 class="text-xl font-bold">نظم نمبر ${poems.length - index}: ${poem.title}</h2>
+          <p class="italic text-gray-600">${poem.author}</p>
+          <p class="text-sm text-purple-600">کتاب: سرآب، چاند، پرندے</p>
+          <p class="mt-2 whitespace-pre-line">${poem.text}</p>
+          <button onclick="copyPoem(${index})" class="text-sm text-blue-500 mt-2 hover:underline no-print">شیئر کریں</button>
+        `;
+        poemsList.appendChild(div);
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const newPoem = {
+        title: form.title.value,
+        author: form.author.value || 'نامعلوم',
+        text: form.poem.value
+      };
+      const poems = JSON.parse(localStorage.getItem('poems') || '[]');
+      poems.unshift(newPoem);
+      localStorage.setItem('poems', JSON.stringify(poems));
+      form.reset();
+      loadPoems();
+    });
+
+    const copyPoem = (index) => {
+      const poems = JSON.parse(localStorage.getItem('poems') || '[]');
+      const number = poems.length - index;
+      const text = `کتاب: سرآب، چاند، پرندے\nنظم نمبر ${number}: ${poems[index].title}\n${poems[index].author}\n\n${poems[index].text}`;
+      navigator.clipboard.writeText(text).then(() => alert('شاعری کاپی ہو گئی!'));
+    }
+
+    window.onload = loadPoems;
+  </script></body>
+</html>
